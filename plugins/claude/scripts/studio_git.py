@@ -579,14 +579,15 @@ def main():
         elif args.action == 'install' and args.workspace:
             if not args.approved:
                 raise ValueError('Dependency installation must be approved after manifest review.')
-            from runtime_environment import environment
+            from runtime_environment import environment, launch_argv
             import shlex
             root, config, git = workspace(args.workspace, args.project_id)
             git.close()
             command = config.get('commands', {}).get('install', '')
             if not command or re.search(r'[;&|<>`\n\r\x00]', command) or '$(' in command:
                 raise ValueError('Configure a direct install command in Studio.')
-            completed = subprocess.run(shlex.split(command), cwd=root, env=environment(config), stdout=sys.stderr, stderr=sys.stderr)
+            runtime_env = environment(config)
+            completed = subprocess.run(launch_argv(shlex.split(command), runtime_env), cwd=root, env=runtime_env, stdout=sys.stderr, stderr=sys.stderr)
             if completed.returncode:
                 raise ValueError('The approved dependency installation failed.')
             result = {'status': 'installed'}
@@ -622,7 +623,7 @@ def main():
         return 0
     except Exception as error:
         # Never serialize HTTP/subprocess exceptions, which may contain credentials.
-        message = str(error) if type(error) is ValueError else 'Operation failed. Check Studio sign-in, Git, OS credential storage, and repository access.'
+        message = str(error) if type(error) is ValueError else ('A required command or file could not be found. Check the selected runtime, configured command and workspace files.' if isinstance(error, FileNotFoundError) else 'Operation failed. Check Studio sign-in, Git, OS credential storage, and repository access.')
         print(json.dumps({'status': 'blocked', 'message': message}), file=sys.stderr)
         return 1
 

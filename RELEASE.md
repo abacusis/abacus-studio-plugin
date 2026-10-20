@@ -1,5 +1,15 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.30.1 — Windows npm launch fix
+
+- Installation, supervised previews, managed preview configuration and runtime
+  wrappers resolve Windows npm/npx launchers through the selected PATH and run
+  node with npm-cli.js/npx-cli.js. No shell=True, cmd.exe or batch evaluation.
+  Unknown batch launchers fail explicitly rather than enabling a shell.
+- Missing-command/file errors no longer suggest an authentication failure.
+- CI adds Node 22 and real Windows npm ci plus npm-run preview launch coverage.
+  Native Windows results remain pending until the workflow executes.
+
 ## 0.30.0 — Windows workspace identity fix
 
 - Compare Git's absolute top-level path using native resolved filesystem paths,

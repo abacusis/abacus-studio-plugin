@@ -14,7 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
-Version 0.30.0 adds clearer local setup diagnostics and preview
+Version 0.30.1: Windows app installation and preview now launch npm through
+Node directly, avoiding batch-launcher lookup failures and misleading sign-in errors.
+
+Clearer local setup diagnostics and preview
 failure guidance help identify missing tools and avoid repeating an unchanged,
 failed startup. Successful setups keep the same simple flow.
 Windows workspace validation now accepts Git's forward-slash
@@ -55,7 +58,11 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.30.0
+### What's new in 0.30.1
+
+**Smoother Windows setup.** npm installation and preview use the selected Node
+runtime directly, including paths with spaces. Missing-command errors give a
+runtime-related next step instead of incorrectly suggesting a sign-in problem.
 
 **Clearer proof behind “done.”** Approved checks
 can leave a private local record of what ran and which code it checked, helping
@@ -86,7 +93,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.30.0 is available from `main` for both tools. Existing Codex installs
+Version 0.30.1 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

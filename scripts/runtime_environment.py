@@ -6,6 +6,30 @@ import shutil
 import subprocess
 import sys
 
+WINDOWS = os.name == 'nt'
+
+
+def launch_argv(argv, env):
+    """Resolve Windows launchers without cmd.exe or shell interpretation."""
+    if not argv:
+        raise ValueError('The configured command is empty.')
+    if not WINDOWS:
+        return list(argv)
+    executable = shutil.which(argv[0], path=env.get('PATH', ''))
+    if not executable:
+        raise ValueError('The configured command could not be found in the selected runtime PATH. Check the installed runtime and Studio command.')
+    path = Path(executable)
+    if path.suffix.lower() in ('.cmd', '.bat'):
+        name = path.stem.lower()
+        if name not in ('npm', 'npx'):
+            raise ValueError('This Windows batch launcher is unsupported without a shell. Configure a direct executable command in Studio.')
+        cli = path.parent / 'node_modules' / 'npm' / 'bin' / (name + '-cli.js')
+        node = shutil.which('node', path=env.get('PATH', ''))
+        if not node or not cli.is_file():
+            raise ValueError('The Windows npm runtime is incomplete. Check Node and npm installation before retrying Setup.')
+        return [node, str(cli), *argv[1:]]
+    return [executable, *argv[1:]]
+
 
 def environment(config):
     env = os.environ.copy()
@@ -43,4 +67,8 @@ if __name__ == '__main__':
     # runtime even when the desktop app was opened with a different shell PATH.
     major, executable, *arguments = sys.argv[1:]
     env = environment({'runtime_requirements': ['node ' + major]})
-    raise SystemExit(subprocess.call([executable, *arguments], env=env))
+    try:
+        raise SystemExit(subprocess.call(launch_argv([executable, *arguments], env), env=env))
+    except (FileNotFoundError, ValueError):
+        print('The configured preview command could not start. Check the selected runtime and command.', file=sys.stderr)
+        raise SystemExit(1)

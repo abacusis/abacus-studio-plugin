@@ -9,7 +9,7 @@ import urllib.request
 import os
 import sys
 import socket
-from runtime_environment import environment
+from runtime_environment import environment, launch_argv
 from plugin_runtime import launch_path
 
 
@@ -72,6 +72,9 @@ def refresh_launch(root, config):
     if '--port' in argv:
         entry['port'] = int(argv[argv.index('--port') + 1])
     runtime_env = environment(config)
+    if os.name == 'nt':
+        resolved = launch_argv(argv, runtime_env)
+        entry['runtimeExecutable'], entry['runtimeArgs'] = resolved[0], resolved[1:]
     if runtime_env.get('PATH') != os.environ.get('PATH'):
         import shutil
         executable = shutil.which(argv[0], path=runtime_env['PATH'])
@@ -119,8 +122,9 @@ def supervise(root, project, config_loader, observation=25, timeout=60):
             started = time.monotonic()
             healthy_since, url = None, None
             with log_path.open('w') as log:
-                process = subprocess.Popen(argv, cwd=root, stdin=subprocess.DEVNULL,
-                                           stdout=log, stderr=subprocess.STDOUT, env=environment(config),
+                runtime_env = environment(config)
+                process = subprocess.Popen(launch_argv(argv, runtime_env), cwd=root, stdin=subprocess.DEVNULL,
+                                           stdout=log, stderr=subprocess.STDOUT, env=runtime_env,
                                            **({'start_new_session': True} if os.name != 'nt' else
                                               {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS}))
                 while process.poll() is None and time.monotonic() - started < timeout:
