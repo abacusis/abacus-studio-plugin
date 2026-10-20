@@ -14,6 +14,12 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+Version 0.30.0 adds clearer local setup diagnostics and preview
+failure guidance help identify missing tools and avoid repeating an unchanged,
+failed startup. Successful setups keep the same simple flow.
+Windows workspace validation now accepts Git's forward-slash
+paths, allowing valid existing clones to continue setup without recloning.
+
 ## Your idea. An AI engineering team behind it.
 
 Don't just ask AI to write code. Give it a process for understanding your app,
@@ -49,7 +55,13 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.29.0
+### What's new in 0.30.0
+
+**Clearer proof behind “done.”** Approved checks
+can leave a private local record of what ran and which code it checked, helping
+identify results made stale by later edits. New release-test tooling checks
+observed Claude/Codex activity rather than trusting an agent's summary. Live
+cross-tool behavioral acceptance remains pending; small changes stay lightweight.
 
 **Simpler saving and review requests.**
 Say “submit and publish” to authorize saving to sandbox and opening Abacus’s
@@ -74,7 +86,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.29.0 is available from `main` for both tools. Existing Codex installs
+Version 0.30.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

@@ -10,6 +10,10 @@ For bug fixes, the regression test must reproduce the actual failure pattern. If
 
 Run focused checks during development, then relevant configured checks before completion. Submit still executes and verifies Studio's own approved checks; local tests do not replace them.
 
+For structured changes, read [Command evidence](verification-records.md) to record
+approved checks against current local source. Passing command receipts do not
+establish criterion coverage, browser behavior, live integrations, or readiness.
+
 For visible behavior, read [Local browser verification](browser-verification.md).
 Exercise the approved user flow and inspect desktop/mobile screenshots using an
 image-capable tool. A screenshot file is evidence of capture, not a passing test

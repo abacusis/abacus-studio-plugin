@@ -118,6 +118,10 @@ if disabled, busy, stale, or unavailable, continue with ordinary source searches
 
 Choose only the relevant playbooks and read them completely before applying them:
 
+For required command checks on structured implementation, use the shared
+[Command evidence](../../references/engineering/verification-records.md) guidance.
+Keep focused edits lightweight. A passing receipt is not whole-change readiness.
+
 - Unclear feature requirements or business terminology: [Planning](../../references/engineering/planning.md).
 - Substantial features or explicit specs: [Specification-driven planning](../../references/engineering/specification.md), with agreement, tasks, and acceptance evidence.
 - Feature implementation or regression tests: [Testing](../../references/engineering/testing.md).

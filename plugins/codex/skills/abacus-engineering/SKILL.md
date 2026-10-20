@@ -43,6 +43,11 @@ and do permitted work in the main conversation; never label this independent rev
 An explicit request for separate review remains unmet until it actually runs.
 Keep the shared maximum of two correction rounds. Evidence must match current code.
 
+For required command checks on structured implementation, read
+[Command evidence](../../references/engineering/verification-records.md). The
+shared helper records approved checks and source freshness; it does not grant
+execution approval or certify readiness. Focused edits may use direct checks.
+
 For a Studio-linked app, use the packaged `abacus-project-knowledge` skill before
 consequential behavior decisions. Missing knowledge is unavailable, not empty.
 Load only relevant shared planning/testing/debugging/architecture/review playbooks.

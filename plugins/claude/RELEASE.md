@@ -1,5 +1,47 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.30.0 — Windows workspace identity fix
+
+- Compare Git's absolute top-level path using native resolved filesystem paths,
+  not raw strings. This handles Git for Windows forward slashes without skipping
+  workspace identity, repository, branch or metadata authorization checks.
+- Regression tests cover matching roots, different roots, relative paths, remote
+  and branch rejection. Native Windows case/separator coverage runs in the new
+  Windows/macOS/Linux CI matrix; local macOS tests are not Windows execution.
+- Existing authorized client clones can be reused after updating the plugin and
+  restarting the host session. No client source or Studio settings migration.
+
+### Setup diagnostics and bounded preview recovery
+
+- Shared read-only setup_health.py reports package version on disk, local tools
+  and explicitly selected workspace prerequisites. It never reads credentials,
+  repairs files, signs in or claims the running session loaded that version.
+- Setup uses local preflight; Status adds diagnostics only when explicitly asked.
+- Failed previews refresh configuration but do not rerun an unchanged command.
+  Safe failure categories replace raw-log output; local changes are preserved.
+- Known npm Vite scripts receive the npm argument separator before generated
+  port flags. Host-managed guidance also requires a corrected cause before retry.
+
+### Evidence-backed checks and behavioral release tooling
+
+- Shared `verification_record.py` runs an approved exact command, associates
+  criterion IDs, captures status/exit/times/output digest and local source hashes,
+  and writes a private ignored receipt. Failures, missing commands, timeouts and
+  changed source cannot become passing receipts. Readiness remains a separate
+  whole-change assessment; external state and meaningful coverage need review.
+- Shared Claude/Codex guidance routes structured verification to these receipts;
+  focused edits keep direct checks. No mandatory extra agents, automatic Git
+  operations, dependency installation, dashboard or recovery system is added.
+- `behavioral_checks.py` prepares and grades six scenarios per host from explicit
+  tool-trace exports plus human review, tied to current candidate source. Default
+  tests validate the grader with synthetic traces only. Live sessions have not
+  been run for this change. Codex native delegation uses explicitly exported
+  app-server role identities and completed agent states; plain exec traces lacking
+  those fields remain unverified rather than being waived.
+- Before publishing a behavioral release, follow
+  `references/engineering/behavioral-release-tests.md`. Keep unresolved acceptance
+  gaps visible; package/unit success is not live model compliance.
+
 ## 0.29.0 — Codex native specialists and simpler submission
 
 - Approved Codex Setup can install eight project-scoped `.codex/agents/abacus-*.toml`

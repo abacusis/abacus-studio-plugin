@@ -27,7 +27,11 @@ already installed, continue directly with step 7 under the existing preview
 execution approval. A source snapshot is NOT eligible for this reuse path.
 
 1. Check Git, Python 3, the Python `keyring` package and configured runtimes with
-   read-only checks. If missing, request approval to install them. Prefer a
+   read-only checks. Use `python3 "<plugin-root>/scripts/setup_health.py"`
+   with the approved interpreter for a local preflight; add --workspace only for
+   an explicitly selected existing workspace. It neither repairs nor authenticates.
+   Findings about files on disk do not prove the session loaded that version.
+   If missing, request approval to install them. Prefer a
    dedicated virtual environment at `~/.abacus-studio/venv` for Python requirements
    from the bundled `scripts/requirements.txt`. The Git helper automatically
    selects that environment if the invoking Python lacks keyring, on macOS,
@@ -106,9 +110,16 @@ execution approval. A source snapshot is NOT eligible for this reuse path.
    available, run `studio_git.py preview --project-id "<Studio ID>" --workspace
    "<absolute workspace>" --approved` under the existing local-execution approval.
    That helper refreshes config, checks loopback HTTP and process survival for 25
-   seconds, and refreshes/retries once on failure. Never invent fallback commands
+   seconds, and refreshes settings on failure. It retries once only if the
+   configured start command changed; an identical command is not rerun. Report
+   the safe failure category and smallest next step, without printing raw logs
+   or secrets. Inspect the local preview log privately if diagnosis needs more
+   evidence. Correcting app code or Studio settings requires the corresponding
+   authority, not a speculative setup workaround. Never invent fallback commands
    or ask the client to fix launch files. For a host-managed startup failure, refresh
-   preview-config and retry the owned launch once. Always verify the page renders
+   preview-config and retry the owned launch once only after identifying a changed
+   command or a verified corrected cause. Otherwise stop and explain the blocker.
+   Always verify the page renders
    with the browser facility too; HTTP success alone is not a rendered-page check.
    Read the internal Local browser verification reference for approved capture,
    desktop/mobile checks, image inspection, sandbox restrictions and evidence:

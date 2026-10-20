@@ -17,7 +17,15 @@ On a service/network error say Could not verify connection. If the helper
 environment is missing, say Status unavailable and offer Setup; do not install
 packages or start sign-in as part of Status.
 
-Never search the home directory, inspect workspace markers, enumerate apps,
+If the user explicitly asks for setup diagnostics or provides a workspace to
+check, also run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/setup_health.py" --workspace
+"<explicit absolute workspace>"` with the approved Python environment. Without
+a workspace, omit that argument. This is a local read-only check, not a repair.
+Report actionable findings briefly. The manifest version is on disk, not proof
+of the running session's version or the latest release. Connection still comes
+only from connection-status; health results never prove a working preview.
+
+For ordinary connection Status, never search the home directory, inspect workspace markers, enumerate apps,
 fetch Git, check runtimes, test previews, or run the helper's Git `status` action.
 The helper reads its own OS credential entry privately; never inspect or print
-credential values in Claude. Do not expand this into a health check.
+credential values in Claude. Do not expand ordinary Status into a health check.

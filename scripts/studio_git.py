@@ -271,7 +271,11 @@ def workspace(root, project):
         raise ValueError('Studio metadata must stay inside the workspace.')
     git = Git(root, project)
     try:
-        if git.text('rev-parse', '--show-toplevel') != str(root):
+        # Git for Windows prints forward slashes; pathlib uses native separators.
+        # Resolve real absolute paths rather than weakening this identity check
+        # with string replacement, prefix matching or unconditional case folding.
+        reported_root = Path(git.text('rev-parse', '--show-toplevel'))
+        if not reported_root.is_absolute() or reported_root.resolve(strict=True) != root:
             raise ValueError('Workspace root mismatch.')
         if git.text('remote', 'get-url', 'origin') != f'https://github.com/{config["repository"]}.git':
             raise ValueError('Remote differs from Studio configuration.')

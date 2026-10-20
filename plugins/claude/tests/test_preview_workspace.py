@@ -10,6 +10,28 @@ import preview_workspace as preview
 
 
 class PreviewTests(unittest.TestCase):
+    def test_npm_separator_before_generated_port_flags(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'package.json').write_text(json.dumps({'scripts': {'dev': 'vite'}}))
+            result = preview.isolate_vite_port(root, {'commands': {'start': 'npm run dev'}})
+            self.assertTrue(result['commands']['start'].startswith('npm run dev -- --port'))
+
+    def test_unchanged_failure_does_not_spawn_twice_or_expose_log(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / '.studio').mkdir()
+            def spawn(argv, **kwargs):
+                kwargs['stdout'].write('Missing script: dev; PRIVATE_VALUE\n')
+                kwargs['stdout'].flush()
+                return type('Process', (), {'poll': lambda self: 1})()
+            with patch.object(preview.subprocess, 'Popen', side_effect=spawn) as popen:
+                with self.assertRaisesRegex(ValueError, 'start script is missing') as error:
+                    preview.supervise(root, 'app', lambda *args: {'commands': {'start': 'npm run dev'}})
+                self.assertEqual(popen.call_count, 1)
+                self.assertNotIn('PRIVATE_VALUE', str(error.exception))
+                self.assertFalse((root / '.studio/preview-start.lock').exists())
+
     def test_vite_uses_fresh_strict_port_without_changing_studio_config(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

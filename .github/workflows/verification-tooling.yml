@@ -1,0 +1,18 @@
+name: Verification tooling regressions
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  offline-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Command receipts (synthetic local commands, no AI inference)
+        run: python3 -m unittest discover -s tests -p test_verification_record.py
+      - name: Behavioral grader (synthetic traces, not live host acceptance)
+        run: python3 -m unittest discover -s tests -p test_behavioral_checks.py

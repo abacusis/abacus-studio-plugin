@@ -28,6 +28,8 @@ def isolate_vite_port(root, config):
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
     # strictPort makes a race fail rather than silently move to another app's URL.
+    if argv[0] == 'npm' and '--' not in argv[3:]:
+        argv.insert(3, '--')
     config = {**config, 'commands': {**config['commands'], 'start': shlex.join([*argv, '--port', str(port), '--strictPort'])}}
     return config
 
@@ -100,9 +102,15 @@ def supervise(root, project, config_loader, observation=25, timeout=60):
     except FileExistsError:
         raise ValueError('A preview startup is already running. Do not start another.') from None
     try:
+        previous_command = None
+        failure = 'No healthy loopback preview was observed. Check the configured command and local preview log privately.'
         for attempt in range(2):
             # Never reuse cached command output or old launch.json.
             config = config_loader(project, 'config')
+            command = config.get('commands', {}).get('start')
+            if attempt and command == previous_command:
+                raise ValueError('Preview stopped; Studio start settings are unchanged. ' + failure + ' Local changes are preserved; no identical retry was run.')
+            previous_command = command
             config = isolate_vite_port(root, config)
             argv, entry = refresh_launch(root, config)
             log_path = root / '.studio/preview.log'
@@ -147,6 +155,13 @@ def supervise(root, project, config_loader, observation=25, timeout=60):
                         process.kill()
                         process.wait()
             # One fresh-config retry only. No source edits or invented fallback.
-        raise ValueError('The Studio preview command failed twice. Local changes are preserved; the administrator must check the configured command.')
+            text = log_path.read_text(errors='replace')[-65536:].lower()
+            if 'eaddrinuse' in text or 'already in use' in text:
+                failure = 'The preview port is occupied. Check this session’s owned preview; do not stop unrelated servers.'
+            elif 'missing script' in text:
+                failure = 'The configured start script is missing. An administrator must correct Studio’s start command.'
+            elif 'cannot find module' in text or 'command not found' in text:
+                failure = 'A required executable or dependency is missing. Check the approved install and runtime before retrying.'
+        raise ValueError('Preview failed after refreshed settings. ' + failure + ' Local changes are preserved.')
     finally:
         lock.rmdir()

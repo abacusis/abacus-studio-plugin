@@ -8,6 +8,12 @@ It evaluates completeness and consistency; it does not certify evidence authenti
 
 ## Reconcile the evidence
 
+For supplied command receipts, require a current coordinator/verifier inspection
+using [Command evidence](verification-records.md). A stale, failed, timed-out,
+not-run or missing required check is not a pass. A successful command proves only
+its actual coverage; criterion labels and receipts cannot establish readiness on
+their own. Do not run the helper from this read-only assessment.
+
 For each criterion and relevant required review, identify the actual source/spec
 checked, execution reporter, action/result and accessible evidence. Match current
 source, not merely HEAD or a familiar filename. A planned test, stale screenshot,
