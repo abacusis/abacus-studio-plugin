@@ -18,3 +18,4 @@ jobs:
           node-version: '22'
       - run: python -m unittest discover -s tests -p test_workspace_identity.py
       - run: python -m unittest discover -s tests -p test_windows_launch.py
+      - run: python -m unittest discover -s tests -p test_studio_git.py -k update

@@ -1,5 +1,16 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.31.0 — safe Update workspace
+
+- Shared helper update action and Claude Update/Codex abacus-update skills fetch
+  through existing Studio authorization and fast-forward clean, behind workspaces.
+- Dirty workspaces, divergence, active Git operations and unfinished submissions
+  stop without auto-stash, commits, pushes, resets or lock deletion. Ignored local
+  files are protected by no-overwrite-ignore. Existing workspace validation remains.
+- Reports dependency changes and preview restart recommendation without executing
+  downloaded code. Natural-language app-update requests route to Update, not gh
+  login or Submit. Matching client sandbox does not imply matching the live build.
+
 ## 0.30.1 — Windows npm launch fix
 
 - Installation, supervised previews, managed preview configuration and runtime

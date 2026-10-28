@@ -4,13 +4,14 @@ import re
 
 ROLES = ('spec-writer', 'builder', 'verifier', 'code-reviewer', 'security-reviewer',
          'ui-reviewer', 'ux-reviewer', 'readiness-reviewer')
-SKILLS = ('connect', 'disconnect', 'setup', 'status', 'submit', 'request-publish',
+SKILLS = ('connect', 'disconnect', 'setup', 'status', 'update', 'submit', 'request-publish',
           'engineering', 'design', 'security', 'project-knowledge', 'sandbox-database')
 SKILL_DESCRIPTIONS = {
     'connect': 'Sign in to Studio and choose your application',
     'disconnect': 'Disconnect your Studio authorization',
     'setup': 'Set up your application and local preview',
     'status': 'Show your Studio connection and access role',
+    'update': 'Download the latest app code without pushing local work',
     'submit': 'Review and save your changes to the client repository',
     'request-publish': 'Request Abacus review before publishing',
     'engineering': 'Plan, build and verify application changes',

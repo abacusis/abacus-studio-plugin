@@ -356,6 +356,8 @@ def execute(action, root, project, description=None, approved=False, checks_pass
         except FileExistsError:
             raise ValueError('Another Git operation is running, or a previous process left a lock. Inspect it before recovery.') from None
         locked = True
+        if action == 'update' and not approved:
+            raise ValueError('Updating local files requires an explicit Update workspace request.')
         merge = (root / '.git/MERGE_HEAD').exists()
         state = load_state(root)
         if action == 'cancel':
@@ -384,6 +386,38 @@ def execute(action, root, project, description=None, approved=False, checks_pass
             return {'status': 'ready_for_review', 'commit': git.text('rev-parse', 'HEAD')}
         # Fetch is always the first Git mutation, including every prepare/submit.
         remote = fetch(git, config)
+        if action == 'update':
+            if merge or any((root / '.git' / name).exists() for name in
+                            ('rebase-merge', 'rebase-apply', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'sequencer')):
+                raise ValueError('Finish the existing Git operation before updating. No local files were updated.')
+            if changed_paths(git):
+                return {'status': 'local_changes', 'message': 'Local changes are preserved. Review and submit them, or choose how to preserve them before updating. Nothing was pushed.'}
+            head = git.text('rev-parse', 'HEAD')
+            ahead, behind = map(int, git.text('rev-list', '--left-right', '--count', 'HEAD...' + remote).split())
+            if not behind:
+                return {'status': 'already_current', 'ahead': ahead, 'behind': 0, 'commit': head,
+                        'message': 'No newer commits on the configured client development branch. This does not verify parity with the live app.'}
+            if ahead:
+                return {'status': 'diverged', 'ahead': ahead, 'behind': behind,
+                        'message': 'Local and remote commits differ. Use the reviewed Submit workflow to integrate them; Update made no local changes.'}
+            if state and state.get('phase') not in ('submitted', 'cancelled'):
+                raise ValueError('An unfinished submission needs review before updating. Local files were preserved.')
+            paths = git.text('diff', '--name-only', head, remote).splitlines()
+            # Recheck immediately before checkout; Git itself rejects clobbering
+            # tracked/untracked work. Protect ignored local files too.
+            if changed_paths(git) or git.text('rev-parse', 'HEAD') != head:
+                raise ValueError('Workspace changed during Update. Stop and review before retrying.')
+            result = git.run('merge', '--ff-only', '--no-autostash', '--no-overwrite-ignore', remote, check=False)
+            if result.returncode:
+                raise ValueError('Fast-forward update could not complete safely. Inspect the workspace; do not reset, stash or retry blindly.')
+            if git.text('rev-parse', 'HEAD') != remote:
+                raise ValueError('Update result changed unexpectedly. Inspect the workspace before continuing.')
+            dependencies = {'package.json', 'package-lock.json', 'npm-shrinkwrap.json',
+                            'pnpm-lock.yaml', 'yarn.lock', 'bun.lock', 'bun.lockb', 'requirements.txt', 'pyproject.toml'}
+            return {'status': 'updated', 'previous_commit': head, 'commit': remote,
+                    'changed_files': paths, 'dependencies_changed': any(Path(p).name in dependencies for p in paths),
+                    'preview_restart_recommended': True, 'pushed': False,
+                    'message': 'Updated from the client development branch. No dependencies installed, checks run, pushes or publishing performed.'}
         if action == 'record':
             if not state or not state.get('pushed_commit'):
                 raise ValueError('No verified push awaiting Studio recording.')
@@ -487,7 +521,7 @@ def migrate(action, directory, project, review_id=None, approved=False):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['browser-install', 'browser-verify', 'code-map', 'knowledge-search', 'knowledge-get', 'connection-status', 'list-apps', 'workspace-config', 'install', 'connect', 'disconnect', 'setup', 'migration-preview', 'migration-apply', 'publish-preview', 'publish', 'preview-config', 'preview', 'credential', 'status', 'prepare', 'resolve', 'check', 'submit', 'record', 'cancel'])
+    parser.add_argument('action', choices=['browser-install', 'browser-verify', 'code-map', 'knowledge-search', 'knowledge-get', 'connection-status', 'list-apps', 'workspace-config', 'install', 'connect', 'disconnect', 'setup', 'migration-preview', 'migration-apply', 'publish-preview', 'publish', 'preview-config', 'preview', 'credential', 'status', 'update', 'prepare', 'resolve', 'check', 'submit', 'record', 'cancel'])
     parser.add_argument('credential_operation', nargs='?', choices=['get', 'store', 'erase'])
     parser.add_argument('--project-id')
     parser.add_argument('--query')

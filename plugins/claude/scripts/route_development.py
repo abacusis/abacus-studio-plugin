@@ -6,6 +6,9 @@ requests, or launch agents. Missing Python/hook support must not block a session
 import json
 
 CONTEXT = (
+    'For downloading latest application code or updating the workspace from GitHub, '
+    'use abacus-studio:update, not plain git pull or GitHub sign-in. Do not use '
+    'this for plugin marketplace updates. Update never authorizes submission. '
     'Abacus Studio routing: when the current request asks you to plan, add, change, '
     'fix, debug, test, refactor, or review application code or an application feature, '
     'invoke the Skill tool with abacus-studio:engineering BEFORE drafting the plan '

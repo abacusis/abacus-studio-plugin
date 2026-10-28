@@ -14,6 +14,11 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.31.0: say “get the latest app changes” or use
+`/abacus-studio:update` (Codex: `$abacus-update`) to safely download updates through
+Studio, without a separate GitHub login. Local unfinished work is never silently
+stashed, committed or overwritten, and Update never pushes or publishes.
+
 Version 0.30.1: Windows app installation and preview now launch npm through
 Node directly, avoiding batch-launcher lookup failures and misleading sign-in errors.
 
@@ -58,7 +63,12 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.30.1
+### What's new in 0.31.0
+
+**Get the latest app changes safely.** Update workspace downloads newer code
+through Studio authorization, without a separate GitHub sign-in. Clean workspaces
+fast-forward; unfinished work and diverged histories stop for review. Nothing is
+pushed or published, and downloaded install scripts do not run automatically.
 
 **Smoother Windows setup.** npm installation and preview use the selected Node
 runtime directly, including paths with spaces. Missing-command errors give a
@@ -93,7 +103,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.30.1 is available from `main` for both tools. Existing Codex installs
+Version 0.31.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 
@@ -266,6 +276,7 @@ for specific Studio actions:
 | `/abacus-studio:design` | Improve a screen's design or usability. |
 | `/abacus-studio:security` | Request a focused source-code security review. |
 | `/abacus-studio:submit` | Review and save changes to the sandbox repository. |
+| `/abacus-studio:update` | Download the latest app code when your workspace can update safely. |
 | `/abacus-studio:request-publish` | Send your changes for publishing review. |
 | `/abacus-studio:disconnect` | Revoke the plugin's Studio connection. |
 

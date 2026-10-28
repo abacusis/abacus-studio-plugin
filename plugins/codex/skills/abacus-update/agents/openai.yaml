@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update"
+  short_description: "Download the latest app code without pushing local work"
+  default_prompt: "Use $abacus-update for my application."

@@ -3,12 +3,12 @@
   "generator": "scripts/generate_packages.py",
   "files": {
     ".agents/plugins/marketplace.json": "e2e9bf77f093bc7e015b59936d5da05af6ba6e668967e5c0a34ce8f8af490ee4",
-    ".codex-plugin/plugin.json": "34e21bd3f6c7434a790043cd7f79b09c36558f38fd2a093cb1d0e0bb9ad03dea",
+    ".codex-plugin/plugin.json": "9c823f5e294f6e8ee9a3eb29b4e9f5766e8423df077307f624b026b8f9ced04f",
     ".gitignore": "0665c509cc04d5698aa99834ec611e04d54386c87026d09603cc4e85103c2cfb",
     "INSTALL.md": "602b571c84a5cff407c87cee4ddca9c3c4e27e3c5c5db9bd7097fd7b5b58342b",
     "LICENSE": "2ff8e6c513fb35e72b3b06899bfbe8a9913ba64952357c45006a15dac56b6cbd",
-    "README.md": "cc8cde278abb281c7447ea19986bbf2e26a34a5577c8d4eb23be65e1f8e23935",
-    "RELEASE.md": "9bd7ceebba32f43816a6ce9ebb882bf0c10db03b5ec986daf8aa319453534515",
+    "README.md": "70302be294c86dafc94a849c297fabbcaa68e3a67738d83614799223a482a694",
+    "RELEASE.md": "b52d9a06959b9caf3caa48fbdefddbc63968706bae2936dce4daae5ae279d4bc",
     "SECURITY.md": "cb533eea6697f4b8d815b069371aaace6d1a9d80aceb490dd2e46e986b2c6ffd",
     "TESTING.md": "092f89d2ed6c775d50bbbaa50a2c530102be5304bd3aa721479f4c52bebe4a9a",
     "THIRD_PARTY_NOTICES.md": "730bc8f638ff020141c408b986f4141d4f4e2a9284ae111154aa5d284bf5b26f",
@@ -21,6 +21,7 @@
     "references/changes/migrate.md": "5792285e3303a8f5494b1e7a1b5ac838bc75aa9d12407508e9596c66d0712f35",
     "references/changes/request-publish.md": "12269b325d6078c8841b6bea24e2d2b5799f0c8e1ef543ca7eb6cfabbe9922c2",
     "references/changes/submit.md": "d5d0eddf7940a6c4b61bd8994e60e366453ccf3957bb307d18f1cb2ebe4583c9",
+    "references/changes/update.md": "302ce22e058899517427b7c71ae8bfcdd57a540c3a197d2468c6faa2f4f7b818",
     "references/client-communication.md": "03939557e5d2365987a67960129694eecc308a33333eb98b7aa92fb4c1443a7a",
     "references/codex/delegation.md": "1acdbd3a42f88dd7e541ff9ca3e62ad976d34191ff90a8797de4c4cb45265021",
     "references/engineering/architecture.md": "97a7c5398713552a818aedbb862c7e36f9dae9c282981c3b6b4ea4f7224c93d4",
@@ -76,7 +77,7 @@
     "scripts/runtime_environment.py": "e622b1fe938273ef8a8eb99aa551dd6e0ed413bc57ec72ece1ff3c05ae93d6c2",
     "scripts/sandbox_environment.py": "7e3cddc170284edf3d21a388912eb44d17db0822373223a0c311a30236c95a3d",
     "scripts/setup_health.py": "479f43a243ab774f8e31647b33c447402166dfecd3e6e0ef8888aa5d9002844a",
-    "scripts/studio_git.py": "0c85d5e120d93d0f27d960bc1d9177c4c6992ae3bff39c35b263279870fd4773",
+    "scripts/studio_git.py": "7e9d8b909fd644eec46474b9c08e1eeee07e0843a8d8b68ff35e2c08e8916fae",
     "scripts/sync_workspace.py": "203fcf611f85355e79092c2221aed064b691eca34a6855a6d5f61ed1f062e621",
     "scripts/verification_record.py": "de878b8e459c7bfcf349cc264f44ec4416ee6ba59dbd67f144e8865cd7d3e082",
     "scripts/workspace_status.py": "d68e0516af1d54775c68f87cc5d57d15e9064b0add96b47c97cce2da21a0d967",
@@ -101,6 +102,8 @@
     "skills/abacus-status/SKILL.md": "f83817becf2027950a279a17e153dad5e0684b5fedecdb8a733ca0bc26735852",
     "skills/abacus-status/agents/openai.yaml": "d80c3d9bcf3a19a9a40ca5bb8b3f9b1a60b2a6a2ac491dcfb9d9db9b94e08b0b",
     "skills/abacus-submit/SKILL.md": "4a8e15346fe8b2935eb6dd428c4e62469e15cf7a02d8d4ea127fac20454fd4d1",
-    "skills/abacus-submit/agents/openai.yaml": "f14ee2be18f215bc357dd9ec852c7dda16abe303b74904a3e6650af192b19444"
+    "skills/abacus-submit/agents/openai.yaml": "f14ee2be18f215bc357dd9ec852c7dda16abe303b74904a3e6650af192b19444",
+    "skills/abacus-update/SKILL.md": "68273e2a56e3a211d4d428f46a4064ee8977707db44e87df1fa6e12058fbdf2a",
+    "skills/abacus-update/agents/openai.yaml": "e5513b8c7b3981ac95c80b1fe4c3f9385b74cbbb0e3a12d3b9b30ebbbd982f16"
   }
 }

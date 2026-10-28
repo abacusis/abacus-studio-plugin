@@ -83,6 +83,98 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(self.git.text('rev-parse', 'HEAD'), before)
         self.assertEqual((self.root / 'app.txt').read_text(), 'Client title\n')
 
+    def test_update_fast_forwards_without_push_or_new_commit(self):
+        self.remote_edit()
+        result = self.run_action('update', approved=True)
+        self.assertEqual(result['status'], 'updated')
+        self.assertEqual((self.root / 'app.txt').read_text(), 'Team title\n')
+        self.assertFalse(result['dependencies_changed'])
+        self.assertFalse(result['pushed'])
+        self.assertFalse(any(c[0] in ('push', 'add', 'commit', 'stash', 'reset') for c in self.git.calls))
+        self.assertFalse((self.root / '.studio/git-operation.lock').exists())
+
+    def test_update_dirty_workspace_is_preserved(self):
+        self.remote_edit()
+        (self.root / 'app.txt').write_text('Unfinished client work')
+        before = self.git.text('rev-parse', 'HEAD')
+        result = self.run_action('update', approved=True)
+        self.assertEqual(result['status'], 'local_changes')
+        self.assertEqual(self.git.text('rev-parse', 'HEAD'), before)
+        self.assertEqual((self.root / 'app.txt').read_text(), 'Unfinished client work')
+
+    def test_update_untracked_draft_is_preserved(self):
+        (self.root / 'draft.md').write_text('Draft specification')
+        self.assertEqual(self.run_action('update', approved=True)['status'], 'local_changes')
+        self.assertEqual((self.root / 'draft.md').read_text(), 'Draft specification')
+
+    def test_update_already_current_and_local_commits_ahead(self):
+        self.assertEqual(self.run_action('update', approved=True)['status'], 'already_current')
+        (self.root / 'local.txt').write_text('Local commit')
+        self.command('add', 'local.txt', root=self.root)
+        self.command('commit', '-m', 'Local only', root=self.root)
+        result = self.run_action('update', approved=True)
+        self.assertEqual(result['status'], 'already_current')
+        self.assertEqual(result['ahead'], 1)
+
+    def test_update_divergence_stops_without_merge(self):
+        self.remote_edit()
+        (self.root / 'local.txt').write_text('Local commit')
+        self.command('add', 'local.txt', root=self.root)
+        self.command('commit', '-m', 'Local only', root=self.root)
+        before = self.git.text('rev-parse', 'HEAD')
+        self.assertEqual(self.run_action('update', approved=True)['status'], 'diverged')
+        self.assertEqual(self.git.text('rev-parse', 'HEAD'), before)
+        self.assertFalse(any(c[0] == 'merge' for c in self.git.calls))
+
+    def test_update_does_not_delete_existing_lock(self):
+        lock = self.root / '.studio/git-operation.lock'
+        lock.mkdir()
+        with self.assertRaisesRegex(ValueError, 'Another Git operation'):
+            self.run_action('update', approved=True)
+        self.assertTrue(lock.is_dir())
+
+    def test_update_requires_authorization_and_fetch_failure_preserves_head(self):
+        with self.assertRaisesRegex(ValueError, 'explicit Update'):
+            self.run_action('update')
+        before = self.git.text('rev-parse', 'HEAD')
+        self.git.fail_fetch = True
+        with self.assertRaises(ValueError):
+            self.run_action('update', approved=True)
+        self.assertEqual(self.git.text('rev-parse', 'HEAD'), before)
+
+    def test_update_protects_ignored_files_from_remote_collision(self):
+        with (self.root / '.git/info/exclude').open('a') as output:
+            output.write('\nlocal-only.txt\n')
+        (self.root / 'local-only.txt').write_text('Private local file')
+        self.command('remote', 'add', 'origin', str(self.remote), root=self.seed)
+        (self.seed / 'local-only.txt').write_text('Remote version')
+        self.command('add', '.', root=self.seed)
+        self.command('commit', '-m', 'Add file', root=self.seed)
+        self.command('push', 'origin', 'sandbox', root=self.seed)
+        with self.assertRaisesRegex(ValueError, 'could not complete safely'):
+            self.run_action('update', approved=True)
+        self.assertEqual((self.root / 'local-only.txt').read_text(), 'Private local file')
+
+    def test_update_blocks_unfinished_submission(self):
+        self.remote_edit()
+        module.save_state(self.root, {'phase': 'ready'})
+        with self.assertRaisesRegex(ValueError, 'unfinished submission'):
+            self.run_action('update', approved=True)
+
+    def test_update_blocks_interrupted_rebase(self):
+        (self.root / '.git/rebase-merge').mkdir()
+        with self.assertRaisesRegex(ValueError, 'existing Git operation'):
+            self.run_action('update', approved=True)
+
+    def test_update_reports_dependency_changes_without_running_install(self):
+        self.command('remote', 'add', 'origin', str(self.remote), root=self.seed)
+        (self.seed / 'package.json').write_text('{"scripts":{"install":"exit 99"}}')
+        self.command('add', '.', root=self.seed)
+        self.command('commit', '-m', 'Manifest', root=self.seed)
+        self.command('push', 'origin', 'sandbox', root=self.seed)
+        result = self.run_action('update', approved=True)
+        self.assertTrue(result['dependencies_changed'])
+
     def test_conflicts_pause_and_cancel_preserves_client_commit(self):
         self.remote_edit()
         (self.root / 'app.txt').write_text('Client title\n')
