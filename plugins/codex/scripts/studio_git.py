@@ -360,6 +360,9 @@ def execute(action, root, project, description=None, approved=False, checks_pass
             raise ValueError('Updating local files requires an explicit Update workspace request.')
         merge = (root / '.git/MERGE_HEAD').exists()
         state = load_state(root)
+        if action in ('integrate', 'prepare') and any((root / '.git' / name).exists() for name in
+                ('rebase-merge', 'rebase-apply', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'sequencer')):
+            raise ValueError('Finish the existing Git operation before combining changes.')
         if action == 'cancel':
             if not approved or not state or not merge or not state.get('saved_commit'):
                 raise ValueError('No plugin-owned merge to cancel.')
@@ -383,7 +386,8 @@ def execute(action, root, project, description=None, approved=False, checks_pass
                 raise ValueError('Unresolved conflicts remain.')
             git.run('-c', 'user.name=Studio client', '-c', 'user.email=client@studio.abacusis.ca', 'commit', '--no-edit')
             save_state(root, state | {'phase': 'ready', 'review_commit': git.text('rev-parse', 'HEAD')})
-            return {'status': 'ready_for_review', 'commit': git.text('rev-parse', 'HEAD')}
+            return {'status': 'ready_for_review', 'commit': git.text('rev-parse', 'HEAD'),
+                    'saved_commit': state['saved_commit'], 'purpose': state.get('purpose', 'submission'), 'pushed': False}
         # Fetch is always the first Git mutation, including every prepare/submit.
         remote = fetch(git, config)
         if action == 'update':
@@ -400,7 +404,7 @@ def execute(action, root, project, description=None, approved=False, checks_pass
             if ahead:
                 return {'status': 'diverged', 'ahead': ahead, 'behind': behind,
                         'message': 'Local and remote commits differ. Use the reviewed Submit workflow to integrate them; Update made no local changes.'}
-            if state and state.get('phase') not in ('submitted', 'cancelled'):
+            if state and state.get('phase') not in ('submitted', 'cancelled', 'integrated'):
                 raise ValueError('An unfinished submission needs review before updating. Local files were preserved.')
             paths = git.text('diff', '--name-only', head, remote).splitlines()
             # Recheck immediately before checkout; Git itself rejects clobbering
@@ -444,11 +448,17 @@ def execute(action, root, project, description=None, approved=False, checks_pass
                         raise ValueError(f'The configured {name} check failed. Submission is blocked.')
             if changed_paths(git) or git.text('rev-parse', 'HEAD') != current:
                 raise ValueError('Checks changed source files. Prepare and review again.')
-            save_state(root, state | {'checked_commit': current, 'checked_commands': config['commands']})
-            return {'status': 'checks_passed', 'commit': current}
-        if action == 'prepare':
+            local_only = state.get('purpose') == 'local_integration'
+            save_state(root, state | {'checked_commit': current, 'checked_commands': config['commands'],
+                                      **({'phase': 'integrated'} if local_only else {})})
+            return {'status': 'integration_checked_local' if local_only else 'checks_passed',
+                    'commit': current, 'pushed': False,
+                    'checks_run': [name for name in ('test', 'build') if config['commands'].get(name)]}
+        if action in ('prepare', 'integrate'):
             if not approved or not description or not description.strip() or len(description) > 8000:
                 raise ValueError('An approved change description is required.')
+            if action == 'integrate' and state and state.get('phase') not in ('submitted', 'cancelled', 'integrated'):
+                raise ValueError('An unfinished submission or integration needs review before combining changes.')
             paths = changed_paths(git)
             verify_files(root, paths)
             if paths:
@@ -456,16 +466,20 @@ def execute(action, root, project, description=None, approved=False, checks_pass
                 git.run('-c', 'user.name=Studio client', '-c', 'user.email=client@studio.abacusis.ca',
                         'commit', '-m', description.strip())
             saved = git.text('rev-parse', 'HEAD')
-            state = {'saved_commit': saved, 'remote_commit': remote, 'description': description.strip(), 'phase': 'merging'}
+            state = {'saved_commit': saved, 'remote_commit': remote, 'description': description.strip(), 'phase': 'merging',
+                     'purpose': 'local_integration' if action == 'integrate' else 'submission'}
             save_state(root, state)
             result = git.run('-c', 'user.name=Studio client', '-c', 'user.email=client@studio.abacusis.ca',
-                             'merge', '--no-edit', '-m', description.strip(), remote, check=False)
+                             'merge', '--no-edit', '--no-autostash', '--no-overwrite-ignore', '-m', description.strip(), remote, check=False)
             if result.returncode:
-                return {'status': 'conflicts' if conflicts(git) else 'merge_failed', 'conflicts': conflicts(git), 'saved_commit': saved}
+                return {'status': 'conflicts' if conflicts(git) else 'merge_failed', 'conflicts': conflicts(git),
+                        'saved_commit': saved, 'purpose': state['purpose'], 'pushed': False}
             review = git.text('rev-parse', 'HEAD')
             save_state(root, state | {'phase': 'ready', 'review_commit': review})
-            return {'status': 'ready_for_review', 'commit': review,
+            return {'status': 'ready_for_review', 'commit': review, 'saved_commit': saved, 'purpose': state['purpose'], 'pushed': False,
                     'changed_files': git.text('diff', '--name-only', remote + '..HEAD').splitlines(), 'commands': config['commands']}
+        if action == 'submit' and state and state.get('purpose') == 'local_integration':
+            raise ValueError('Local integration does not authorize a push. Start a separately requested Submit workflow.')
         if action != 'submit' or not approved or not state or state.get('phase') != 'ready':
             raise ValueError('Prepare, review, and run checks before confirming submission.')
         if state.get('checked_commit') != state.get('review_commit') or state.get('checked_commands') != config['commands']:
@@ -521,7 +535,7 @@ def migrate(action, directory, project, review_id=None, approved=False):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['browser-install', 'browser-verify', 'code-map', 'knowledge-search', 'knowledge-get', 'connection-status', 'list-apps', 'workspace-config', 'install', 'connect', 'disconnect', 'setup', 'migration-preview', 'migration-apply', 'publish-preview', 'publish', 'preview-config', 'preview', 'credential', 'status', 'update', 'prepare', 'resolve', 'check', 'submit', 'record', 'cancel'])
+    parser.add_argument('action', choices=['browser-install', 'browser-verify', 'code-map', 'knowledge-search', 'knowledge-get', 'connection-status', 'list-apps', 'workspace-config', 'install', 'connect', 'disconnect', 'setup', 'migration-preview', 'migration-apply', 'publish-preview', 'publish', 'preview-config', 'preview', 'credential', 'status', 'update', 'integrate', 'prepare', 'resolve', 'check', 'submit', 'record', 'cancel'])
     parser.add_argument('credential_operation', nargs='?', choices=['get', 'store', 'erase'])
     parser.add_argument('--project-id')
     parser.add_argument('--query')
@@ -649,7 +663,7 @@ def main():
                 argv, entry = refresh_launch(root, config)
                 result = {'status': 'launch_updated', 'configuration': entry, 'command': config['commands']['start'], 'skills': installed_skills}
         elif args.workspace:
-            description = json.loads(sys.stdin.read(20000)).get('description') if args.action == 'prepare' else None
+            description = json.loads(sys.stdin.read(20000)).get('description') if args.action in ('prepare', 'integrate') else None
             result = execute(args.action, args.workspace, args.project_id, description, args.approved)
         else:
             raise ValueError('A Studio workspace is required.')

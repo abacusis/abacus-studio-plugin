@@ -14,6 +14,11 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.32.0: combine your work with incoming team updates
+locally before submitting. Claude and Codex explain conflicting behavior, propose
+a combined result and ask about meaningful choices. Local checkpoints preserve
+your work; combining changes locally never grants permission to push or publish.
+
 New in 0.31.0: say “get the latest app changes” or use
 `/abacus-studio:update` (Codex: `$abacus-update`) to safely download updates through
 Studio, without a separate GitHub login. Local unfinished work is never silently
@@ -63,7 +68,12 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.31.0
+### What's new in 0.32.0
+
+**Combine changes without submitting yet.** When your work overlaps team updates,
+ask to combine them locally. The workflow preserves a local checkpoint, explains
+conflicting behavior and asks about meaningful choices. Checks follow the combined
+result; a later Submit request is still required before anything is pushed.
 
 **Get the latest app changes safely.** Update workspace downloads newer code
 through Studio authorization, without a separate GitHub sign-in. Clean workspaces
@@ -103,7 +113,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.31.0 is available from `main` for both tools. Existing Codex installs
+Version 0.32.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

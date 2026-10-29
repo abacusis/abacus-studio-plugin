@@ -187,6 +187,77 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(self.git.text('rev-parse', 'HEAD'), result['saved_commit'])
         self.assertEqual((self.root / 'app.txt').read_text(), 'Client title\n')
 
+    def test_local_integration_combines_both_sides_but_cannot_push(self):
+        self.remote_edit()
+        remote_before = self.command('rev-parse', 'sandbox', root=self.remote)
+        (self.root / 'client.txt').write_text('Client feature')
+        result = self.run_action('integrate', description='Combine team and client changes locally', approved=True)
+        self.assertEqual(result['purpose'], 'local_integration')
+        self.assertEqual((self.root / 'app.txt').read_text(), 'Team title\n')
+        self.assertEqual((self.root / 'client.txt').read_text(), 'Client feature')
+        checked = self.run_action('check', approved=True)
+        self.assertEqual(checked['status'], 'integration_checked_local')
+        self.assertEqual(checked['checks_run'], [])
+        with self.assertRaisesRegex(ValueError, 'does not authorize a push'):
+            self.run_action('submit', approved=True)
+        self.assertEqual(remote_before, self.command('rev-parse', 'sandbox', root=self.remote))
+        self.assertFalse(any(c[0] == 'push' for c in self.git.calls))
+
+    def test_local_integration_conflict_resolution_keeps_local_only_intent(self):
+        self.remote_edit()
+        (self.root / 'app.txt').write_text('Client title\n')
+        result = self.run_action('integrate', description='Combine locally', approved=True)
+        self.assertEqual(result['status'], 'conflicts')
+        with self.assertRaises(ValueError):
+            self.run_action('resolve', approved=True)
+        (self.root / 'app.txt').write_text('Team title and client title\n')
+        self.run_action('resolve', approved=True)
+        self.assertEqual(module.load_state(self.root)['purpose'], 'local_integration')
+        self.assertEqual(self.run_action('check', approved=True)['status'], 'integration_checked_local')
+        with self.assertRaisesRegex(ValueError, 'does not authorize a push'):
+            self.run_action('submit', approved=True)
+
+    def test_local_integration_cancel_retains_client_checkpoint(self):
+        self.remote_edit()
+        (self.root / 'app.txt').write_text('Client title\n')
+        result = self.run_action('integrate', description='Combine locally', approved=True)
+        self.run_action('cancel', approved=True)
+        self.assertEqual(self.git.text('rev-parse', 'HEAD'), result['saved_commit'])
+        self.assertEqual((self.root / 'app.txt').read_text(), 'Client title\n')
+
+    def test_local_integration_requires_approval_and_excludes_secrets(self):
+        before = self.git.text('rev-parse', 'HEAD')
+        (self.root / '.env').write_text('PRIVATE=value')
+        with self.assertRaises(ValueError):
+            self.run_action('integrate', description='Combine locally')
+        with self.assertRaises(ValueError):
+            self.run_action('integrate', description='Combine locally', approved=True)
+        self.assertEqual(self.git.text('rev-parse', 'HEAD'), before)
+
+    def test_local_integration_failed_checks_do_not_mark_checked(self):
+        (self.root / 'client.txt').write_text('Client feature')
+        self.run_action('integrate', description='Combine locally', approved=True)
+        self.config['commands']['test'] = 'exit 1'
+        with self.assertRaisesRegex(ValueError, 'configured test check failed'):
+            self.run_action('check', approved=True)
+        self.assertNotIn('checked_commit', module.load_state(self.root))
+
+    def test_local_integration_can_later_be_explicitly_submitted(self):
+        (self.root / 'client.txt').write_text('Client feature')
+        self.run_action('integrate', description='Combine locally', approved=True)
+        self.run_action('check', approved=True)
+        self.run_action('prepare', description='Submit the combined work', approved=True)
+        self.run_action('check', approved=True)
+        result = self.run_action('submit', approved=True)
+        self.assertEqual(result['status'], 'submitted')
+
+    def test_local_integration_fetch_failure_never_checkpoints(self):
+        (self.root / 'client.txt').write_text('Unfinished')
+        self.git.fail_fetch = True
+        with self.assertRaises(ValueError):
+            self.run_action('integrate', description='Combine locally', approved=True)
+        self.assertFalse(any(c[0] in ('add', 'commit', 'merge', 'push') for c in self.git.calls))
+
     def test_remote_changes_block_push_after_review(self):
         (self.root / 'app.txt').write_text('Client title\n')
         self.run_action('prepare', description='Update title', approved=True)

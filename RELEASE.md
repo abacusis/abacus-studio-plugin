@@ -1,5 +1,18 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.32.0 — local integration and conflict guidance
+
+- Shared conflict playbook routes Update and Submit through plain-language intent
+  comparison, grouped resolution approval, both-side/interaction checks and bounded
+  escalation. Clean merges are not treated as semantic verification.
+- Explicit integrate action checkpoints reviewed local changes, merges sandbox and
+  records local-only intent. Resolve/cancel preserve that intent and saved work;
+  check records configured results without authorizing a push. Submit rejects
+  local-integration state until a separately requested fresh Prepare workflow.
+- Ordinary Update remains fast-forward-only. No auto-stash, reset, force-push,
+  automatic ticket, GitHub login or silent resolution. Existing submission behavior
+  retains fetch-first and checked normal pushes; ignored files remain protected.
+
 ## 0.31.0 — safe Update workspace
 
 - Shared helper update action and Claude Update/Codex abacus-update skills fetch

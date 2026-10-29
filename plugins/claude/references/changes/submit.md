@@ -28,13 +28,15 @@ current access and the separate client repository on every operation.
    on stdin, using safely quoted host input. This fetches AGAIN, saves changes in
    a local commit, records it, and merges the fetched remote revision. It does not
    push. The description cannot start a shell command; never use eval.
-4. If conflicts occur, pause. Explain both versions and propose a resolution.
+4. If conflicts occur or behavior overlaps, read [Conflict resolution](conflicts.md).
+   Pause for conflicts. Explain both versions in business terms and propose a resolution.
    Obtain approval before editing conflicting files. Then run `resolve ... --approved`.
    Remaining conflict markers block resolution. Never discard either side silently.
    If the client cancels, explain that proposed merge resolutions will be discarded,
    but their saved pre-merge local commit stays; run `cancel ... --approved`.
    Never reset --hard. A failed merge without a conflict needs diagnosis, not a push.
-5. Review the final diff and preview. Inspect current Studio test/build commands
+5. Review the final diff and preview, including both sides' intended behavior even
+   if Git merged automatically. Inspect current Studio test/build commands
    before execution; the Submit request covers these normal checks. Run `check ... --approved`.
    The helper actually executes configured checks and records the exact checked
    commit. A failed check or changed source blocks submission; no bypass flag exists.

@@ -1,6 +1,6 @@
 {
   "name": "abacus-studio",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "description": "Build and improve your application in Codex with Abacus engineering guidance, project knowledge and reviewed submission workflows.",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json",
