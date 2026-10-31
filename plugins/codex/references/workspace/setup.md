@@ -90,7 +90,13 @@ execution approval. A source snapshot is NOT eligible for this reuse path.
    runtime installation. A map failure must not block the install or preview.
    If discovery is stale after moving folders, ask the user to start a new session
    in the clone. Existing user skills are never overwritten; report conflicts.
-5. On failure, preserve files and report the blocker. Do not fall back to a ZIP,
+5. On Git failure, report the helper's safe diagnostic: category, exit_code and
+   credential-helper/retrieval observation. not_observed means unconfirmed, not
+   proof the helper never ran. Issued means credentials were retrieved, not that
+   GitHub accepted them. Categories are diagnostic hints, not proven causes.
+   Never print raw Git stderr, environment, tokens or credential-helper stdout.
+   Preserve files, including partial destinations; do not blindly retry or delete
+   them. No GitHub login workaround. On failure, preserve files and report the blocker. Do not fall back to a ZIP,
    an internal repository, credentials supplied in chat, or destructive cleanup.
    A partial NEW folder may remain; let the user inspect it before choosing another.
 6. Inspect downloaded manifests and dependency lifecycle scripts before installing.

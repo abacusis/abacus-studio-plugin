@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "abacus-studio",
-      "version": "0.32.0",
+      "version": "0.32.1",
       "source": "./",
       "description": "Connect Claude Code to your application, build and preview changes locally, and submit them for Abacus review."
     }

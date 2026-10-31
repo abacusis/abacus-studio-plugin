@@ -1,5 +1,15 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.32.1 — sanitized Git setup diagnostics
+
+- Git failures retain exit status and allowlisted categories/next steps, not raw
+  stderr or commands. Timeout and local executable failures remain distinct.
+- Nonce-scoped stderr markers record helper invocation, credential retrieval
+  attempt, issuance or failure. No token, username, source content or raw logs
+  enter the diagnostic JSON or a persistent log. Missing markers are unconfirmed.
+- Shared Setup guidance explains evidence limits, preserves partial folders and
+  stops blind retries or GitHub-login workarounds. Both hosts share the helper.
+
 ## 0.32.0 — local integration and conflict guidance
 
 - Shared conflict playbook routes Update and Submit through plain-language intent

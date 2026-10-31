@@ -1,6 +1,6 @@
 {
   "name": "abacus-studio",
-  "version": "0.32.0",
+  "version": "0.32.1",
   "description": "Connect Claude Code to your application, build and preview changes locally, and submit them for Abacus review.",
   "author": { "name": "Abacus" },
   "homepage": "https://studio.abacusis.ca"

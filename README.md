@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.32.1: safer setup diagnostics distinguish network,
+branch, local execution and repository-access failures, and report whether Studio
+credential retrieval was observed—without exposing keys or raw Git logs.
+
 New in 0.32.0: combine your work with incoming team updates
 locally before submitting. Claude and Codex explain conflicting behavior, propose
 a combined result and ask about meaningful choices. Local checkpoints preserve
@@ -68,7 +72,11 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.32.0
+### What's new in 0.32.1
+
+**Clearer setup failure reports.** Failed Git downloads now include a safe failure
+category, exit status and credential-helper observations, rather than assuming
+GitHub access is the problem. Credentials and raw Git output stay out of reports.
 
 **Combine changes without submitting yet.** When your work overlaps team updates,
 ask to combine them locally. The workflow preserves a local checkpoint, explains
@@ -113,7 +121,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.32.0 is available from `main` for both tools. Existing Codex installs
+Version 0.32.1 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

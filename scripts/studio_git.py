@@ -22,6 +22,7 @@ import urllib.request
 import webbrowser
 
 from clone_workspace import clone
+from git_diagnostics import GitOperationError, failure as git_failure
 from sync_workspace import excluded, SECRET
 from preview_workspace import refresh_launch, supervise
 from sandbox_environment import provision
@@ -186,16 +187,33 @@ def connection_status():
 
 
 def credential(project):
+    # A per-process nonce makes these fixed markers attributable to this run.
+    # Git consumes stdout privately; diagnostics use only these stderr markers.
+    nonce = os.environ.get('ABACUS_GIT_DIAGNOSTIC_NONCE', '')
+    def mark(stage):
+        if re.fullmatch(r'[a-f0-9]{32}', nonce):
+            print('[studio-git:' + nonce + ':' + stage + ']', file=sys.stderr, flush=True)
+    mark('invoked')
+    try:
+        return credential_grant(project, mark)
+    except Exception:
+        mark('failed')
+        raise
+
+
+def credential_grant(project, mark=lambda stage: None):
     fields = dict(line.split('=', 1) for line in sys.stdin.read(8192).splitlines() if '=' in line)
     config = operation(project, 'config')
     if fields.get('protocol') != 'https' or fields.get('host') != 'github.com' or fields.get('path') not in (
             config['repository'], config['repository'] + '.git'):
         raise ValueError('Credential request is not for the authorized client repository.')
+    mark('retrieval_attempted')
     grant = operation(project, 'credential')
     if grant['repository'] != config['repository']:
         raise ValueError('Repository authorization changed.')
     # This stdout is consumed privately by Git's credential pipe. Never run this
     # command as a user-facing diagnostic or capture its output in Claude tools.
+    mark('issued')
     sys.stdout.write('username=x-access-token\npassword=' + grant['token'] + '\n\n')
 
 
@@ -214,13 +232,26 @@ class Git:
             if name.startswith('GIT_'):
                 del environment[name]
         environment.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1', GIT_TERMINAL_PROMPT='0')
+        nonce = secrets.token_hex(16)
+        environment['ABACUS_GIT_DIAGNOSTIC_NONCE'] = nonce
+        operation_name = 'clone' if 'clone' in args else 'git'
         command = ['git', '-c', f'core.hooksPath={self.hooks.name}', '-c', 'credential.helper=',
             '-c', 'credential.helper=' + helper(self.project), '-c', 'credential.useHttpPath=true',
             '-c', 'status.renames=false',
             '-c', 'protocol.file.allow=never', '-C', str(self.root), *args]
-        result = subprocess.run(command, capture_output=True, env=environment, timeout=600, input=input)
+        try:
+            result = subprocess.run(command, capture_output=True, env=environment, timeout=600, input=input)
+        except subprocess.TimeoutExpired as error:
+            diagnostic = git_failure(error.stderr, nonce=nonce, operation=operation_name)
+            diagnostic.update(category='timeout', next_step='Git timed out. Inspect any partial destination and network access before retrying; do not delete local work.')
+            raise GitOperationError(diagnostic) from None
+        except OSError as error:
+            diagnostic = git_failure('', nonce=nonce, operation=operation_name)
+            diagnostic.update(category='executable_missing' if isinstance(error, FileNotFoundError) else 'local_execution',
+                              next_step='Check Git availability, destination and host execution permissions.')
+            raise GitOperationError(diagnostic) from None
         if check and result.returncode:
-            raise ValueError('Git operation failed; changes remain local. Check authentication, conflicts, or remote updates.')
+            raise GitOperationError(git_failure(result.stderr, result.returncode, nonce, operation_name))
         return result
     def text(self, *args):
         return self.run(*args).stdout.decode('utf-8').strip()
@@ -671,8 +702,9 @@ def main():
         return 0
     except Exception as error:
         # Never serialize HTTP/subprocess exceptions, which may contain credentials.
-        message = str(error) if type(error) is ValueError else ('A required command or file could not be found. Check the selected runtime, configured command and workspace files.' if isinstance(error, FileNotFoundError) else 'Operation failed. Check Studio sign-in, Git, OS credential storage, and repository access.')
-        print(json.dumps({'status': 'blocked', 'message': message}), file=sys.stderr)
+        message = str(error) if type(error) is ValueError or isinstance(error, GitOperationError) else ('A required command or file could not be found. Check the selected runtime, configured command and workspace files.' if isinstance(error, FileNotFoundError) else 'Operation failed. Check Studio sign-in, Git, OS credential storage, and repository access.')
+        print(json.dumps({'status': 'blocked', 'message': message,
+                          **({'diagnostic': error.diagnostic} if isinstance(error, GitOperationError) else {})}), file=sys.stderr)
         return 1
 
 
