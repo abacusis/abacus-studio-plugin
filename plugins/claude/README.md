@@ -17,6 +17,8 @@ and work with Abacus to bring reviewed changes into your live application.
 New in 0.32.2: a credential-helper compatibility fix for Apple's Python 3.9
 allows Git to request Studio authorization without failing on its own arguments.
 Clients do not need a personal GitHub login or a Python replacement for this fix.
+Compatibility checks exercise Git launching the helper, not just Python parsing
+arguments inside the main process.
 
 New in 0.32.1: safer setup diagnostics distinguish network,
 branch, local execution and repository-access failures, and report whether Studio
