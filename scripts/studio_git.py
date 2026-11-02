@@ -218,8 +218,11 @@ def credential_grant(project, mark=lambda stage: None):
 
 
 def helper(project):
+    # Git appends get/store/erase. Keep optional flags before both positionals:
+    # Apple Python 3.9 rejects `credential --project-id ID get` before the
+    # credential handler even starts, masking the parser error as Git auth failure.
     return '!' + ' '.join(shlex.quote(value) for value in
-        [sys.executable, str(Path(__file__).resolve()), 'credential', '--project-id', project])
+        [sys.executable, str(Path(__file__).resolve()), '--project-id', project, 'credential'])
 
 
 class Git:

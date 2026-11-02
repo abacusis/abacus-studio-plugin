@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.32.2: a credential-helper compatibility fix for Apple's Python 3.9
+allows Git to request Studio authorization without failing on its own arguments.
+Clients do not need a personal GitHub login or a Python replacement for this fix.
+
 New in 0.32.1: safer setup diagnostics distinguish network,
 branch, local execution and repository-access failures, and report whether Studio
 credential retrieval was observed—without exposing keys or raw Git logs.
@@ -72,7 +76,12 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.32.1
+### What's new in 0.32.2
+
+**Mac setup compatibility.** Git's credential-helper arguments now work with
+Apple's Python 3.9, fixing a parser failure that appeared as an authentication
+error before Studio credentials could be requested. No personal GitHub login
+or Python replacement is needed for this compatibility fix.
 
 **Clearer setup failure reports.** Failed Git downloads now include a safe failure
 category, exit status and credential-helper observations, rather than assuming
@@ -121,7 +130,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.32.1 is available from `main` for both tools. Existing Codex installs
+Version 0.32.2 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

@@ -1,5 +1,16 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.32.2 — Apple Python credential-helper invocation
+
+- Put --project-id before the credential action so Git's appended get/store/erase
+  remains adjacent to the action. Python 3.9 otherwise rejects get before reaching
+  credential handling, producing Git exit 128 without any helper markers.
+- Reproduced failure with real Apple Git -> Apple Python 3.9 using an isolated
+  synthetic helper and the actual production argument parser. No Studio tokens,
+  GitHub login, Keychain access or live repository mutation in the regression test.
+- CI adds actual Git helper invocation coverage and an explicit Python 3.9 job.
+  This proves the parser/launcher fix, not full live app setup acceptance.
+
 ## 0.32.1 — sanitized Git setup diagnostics
 
 - Git failures retain exit status and allowlisted categories/next steps, not raw
