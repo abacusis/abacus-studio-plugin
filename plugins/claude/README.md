@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.34.0: request a Security Officer OWASP + STRIDE source assessment for a
+threat model, relevant security controls, findings and a clear validation backlog.
+This deeper review is optional; everyday changes retain focused security checks.
+
 New in 0.33.0: Engineering and Design check for team updates before starting a new
 coding task. Clean workspaces update safely; unfinished work pauses for your choice.
 No separate Update command is needed at the start of each task.
@@ -82,7 +86,13 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.33.0
+### What's new in 0.34.0
+
+**Security Officer assessment.** Ask for an OWASP +
+STRIDE source assessment to understand threats, relevant security controls, findings
+and remaining validation. The existing Security Reviewer handles this deeper mode
+on request; everyday changes keep their focused review. It is not penetration
+testing, compliance certification or automatic approval to publish.
 
 **Mac setup compatibility.** Git's credential-helper arguments now work with
 Apple's Python 3.9, fixing a parser failure that appeared as an authentication
@@ -140,7 +150,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.33.0 is available from `main` for both tools. Existing Codex installs
+Version 0.34.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

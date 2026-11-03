@@ -2,6 +2,22 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+test('security assessment ships to both hosts without expanding reviewer tools', () => {
+  for (const host of ['claude', 'codex']) {
+    const root = `plugins/${host}/`;
+    const skill = read(root + (host === 'claude' ? 'skills/security/SKILL.md' : 'skills/abacus-security/SKILL.md'));
+    assert.match(skill, /references\/security\/assessment\.md/);
+    const guide = read(root + 'references/security/assessment.md');
+    for (const link of guide.matchAll(/\]\(([^)]+\.md)\)/g)) {
+      const resolved = new URL(`../${root}references/security/${link[1]}`, import.meta.url);
+      assert.ok(existsSync(resolved), resolved.pathname);
+    }
+  }
+  const agent = read('agents/security-reviewer.md');
+  assert.match(agent, /^tools: Read, Grep, Glob$/m);
+  assert.match(agent, /references\/security\/assessment\.md/);
+  assert.equal(readdirSync(new URL('../agents/', import.meta.url)).length, 8);
+});
 test('task-start freshness uses safe shared update on both hosts', () => {
   for (const path of ['skills/engineering/SKILL.md', 'skills/design/SKILL.md', 'adapters/codex/engineering.md'])
     assert.match(read(path), /task-freshness\.md/);
@@ -220,7 +236,7 @@ test('migrations require per-file approval and never deliver management credenti
 test('Claude package uses one helper authorization without an extra connector', () => {
   const manifest = JSON.parse(read('.claude-plugin/plugin.json'));
   assert.equal(manifest.name, 'abacus-studio');
-  assert.equal(manifest.version, '0.33.0');
+  assert.equal(manifest.version, '0.34.0');
   const config = JSON.parse(read('.mcp.json'));
   assert.deepEqual(config.mcpServers, {});
   assert.equal(config.mcpServers['studio-local'], undefined);

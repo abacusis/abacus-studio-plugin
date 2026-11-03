@@ -1,5 +1,17 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.34.0 — Security Officer source assessment
+
+- Existing Security Reviewer supports explicitly requested OWASP ASVS 5.0.0 and
+  STRIDE source assessments on Claude and Codex, without adding an agent or tools.
+- Reports include architecture/threat model, selected control coverage, findings,
+  assumptions and validation backlog. Requirement IDs must be reference-verified;
+  missing backend/configuration remains a gap, not a confirmed vulnerability.
+- No target execution, live probes, automatic fixes, report uploads, compliance
+  claims or publishing approval. Report files require a safe approved destination.
+- Packaging/profile regression checks and read-only instruction-path scenarios
+  passed. Full live Claude/Codex session acceptance remains pending.
+
 ## 0.33.0 — task-start team updates
 
 - Engineering and Design on Claude and Codex apply the existing safe Update helper
