@@ -3,6 +3,9 @@
 Use this workflow to download current code into an existing authorized client Git
 workspace. Do not use Submit just to download changes. A clear “get the latest
 changes” request covers this local update; no redundant confirmation is required.
+At the start of a new authorized implementation task, the Engineering/Design
+[Task freshness](../engineering/task-freshness.md) guidance also authorizes this
+bounded safe update without a separate Update request. Its stop conditions apply.
 
 Read the selected workspace's Studio metadata to identify its app, without printing
 credentials. Use the setup-approved Python interpreter and packaged helper:

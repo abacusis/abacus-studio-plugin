@@ -6,6 +6,7 @@ description: Improve your app's design, layout, and accessibility with Impeccabl
 Resolve `<plugin-root>` from the absolute source path of this loaded skill: two directories above its directory. Substitute that real path in commands; it is not an environment variable. Skill references name packaged workflows, not a Claude Skill tool. Read references/codex/delegation.md before any specialist handoff; use approved project-scoped Abacus profiles when available.
 
 Read and apply [Client communication](../../references/client-communication.md) completely.
+Before authorized implementation edits, apply [Task freshness](../../references/engineering/task-freshness.md).
 For mockup/prototype requests, first apply [Mockup-first](../../references/engineering/mockup-first.md)
 to preserve sample-data isolation, scope and stop/continue boundaries. A preview
 does not require a new command or automatically authorize backend implementation.

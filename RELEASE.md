@@ -1,5 +1,17 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.33.0 — task-start team updates
+
+- Engineering and Design on Claude and Codex apply the existing safe Update helper
+  once before a new authorized implementation task, without repeating approval.
+- Clean workspaces fast-forward through Studio authorization. Local changes,
+  divergence and failures stop before edits and preserve the client's work.
+- Planning/review-only work, follow-up messages and explicit offline/no-update
+  instructions do not trigger automatic updates. No automatic merging, dependency
+  installation, pushing or publishing; this is skill guidance, not background sync.
+- Package contract and existing Git workflow regression checks cover routing and
+  safe-update mechanics. Live host-session acceptance remains to be tested.
+
 ## 0.32.2 — Apple Python credential-helper invocation
 
 - Put --project-id before the credential action so Git's appended get/store/erase

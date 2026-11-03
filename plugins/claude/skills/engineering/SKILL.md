@@ -10,6 +10,7 @@ Read and apply [Client communication](../../references/client-communication.md) 
 Use this skill automatically when the development task fits, or explicitly through `/abacus-studio:engineering`. The user does not need to learn separate testing or debugging commands.
 
 FIRST read [Workflow depth](../../references/engineering/workflow-depth.md).
+Before authorized implementation edits, apply [Task freshness](../../references/engineering/task-freshness.md).
 Honor natural-language quick/deep preferences while classifying actual risk.
 When the user requests a mockup/prototype, or substantial visual uncertainty makes
 a preview useful, use [Mockup-first](../../references/engineering/mockup-first.md).

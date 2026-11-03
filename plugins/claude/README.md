@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.33.0: Engineering and Design check for team updates before starting a new
+coding task. Clean workspaces update safely; unfinished work pauses for your choice.
+No separate Update command is needed at the start of each task.
+
 New in 0.32.2: a credential-helper compatibility fix for Apple's Python 3.9
 allows Git to request Studio authorization without failing on its own arguments.
 Clients do not need a personal GitHub login or a Python replacement for this fix.
@@ -78,7 +82,7 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.32.2
+### What's new in 0.33.0
 
 **Mac setup compatibility.** Git's credential-helper arguments now work with
 Apple's Python 3.9, fixing a parser failure that appeared as an authentication
@@ -98,6 +102,10 @@ result; a later Submit request is still required before anything is pushed.
 through Studio authorization, without a separate GitHub sign-in. Clean workspaces
 fast-forward; unfinished work and diverged histories stop for review. Nothing is
 pushed or published, and downloaded install scripts do not run automatically.
+Engineering and Design check for team updates before starting a new coding
+task in a connected workspace. Safe updates happen without another command;
+unfinished work or conflicts pause for your choice. This is task-start guidance,
+not background sync, and does not synchronize sandbox with production.
 
 **Smoother Windows setup.** npm installation and preview use the selected Node
 runtime directly, including paths with spaces. Missing-command errors give a
@@ -132,7 +140,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.32.2 is available from `main` for both tools. Existing Codex installs
+Version 0.33.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

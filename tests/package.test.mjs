@@ -2,6 +2,16 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+test('task-start freshness uses safe shared update on both hosts', () => {
+  for (const path of ['skills/engineering/SKILL.md', 'skills/design/SKILL.md', 'adapters/codex/engineering.md'])
+    assert.match(read(path), /task-freshness\.md/);
+  const guide = read('references/engineering/task-freshness.md');
+  for (const phrase of ['once before the first edits', 'planning-only', 'review-only',
+    'stay offline', 'local_changes', 'diverged', 'Wait for that choice', 'No blind retry',
+    'not a background', 'not production', '--approved', 'setup-approved interpreter'])
+    assert.ok(guide.includes(phrase), phrase);
+  assert.match(read('references/changes/update.md'), /task-freshness\.md/);
+});
 test('mockup-first is optional, isolated and preserves implementation authority', () => {
   const guide=read('references/engineering/mockup-first.md');
   for(const phrase of ['No new command','mockup only','build directly','No preference','Do not suggest mockups for ordinary success messages','Quick','synthetic sample data','Localhost is not','No backend edits','No new command','Planning-only','Mockup-only request: stop','already authorized','publishing approval','screenshots','No preference'])assert.ok(guide.toLowerCase().includes(phrase.toLowerCase()),phrase);
@@ -210,7 +220,7 @@ test('migrations require per-file approval and never deliver management credenti
 test('Claude package uses one helper authorization without an extra connector', () => {
   const manifest = JSON.parse(read('.claude-plugin/plugin.json'));
   assert.equal(manifest.name, 'abacus-studio');
-  assert.equal(manifest.version, '0.32.2');
+  assert.equal(manifest.version, '0.33.0');
   const config = JSON.parse(read('.mcp.json'));
   assert.deepEqual(config.mcpServers, {});
   assert.equal(config.mcpServers['studio-local'], undefined);
