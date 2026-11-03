@@ -21,6 +21,21 @@ Do not search the computer for other projects or substitute an app. Resolve
 `scripts/studio_git.py` against `${CLAUDE_PLUGIN_ROOT}` and use the setup helper
 Python environment; do not install new dependencies or ask for credentials.
 
+At the start of a new development task in a linked workspace, browse once with
+an empty query and `--knowledge-scope suite`, following pagination to discover only
+shared suite context without loading every app record's title. Retrieve
+the full approved suite overview before consequential planning or edits; reuse it
+within the unchanged task. Then search the task's topic as below. Do not repeatedly
+reload the overview on every message or specialist handoff; pass relevant context
+to specialists. Planning-only tasks may read context without updating app code.
+
+Results may have scope `app` or `suite` and suite attribution. Suite records are
+explicitly shared context for the selected app, not permission to read private
+sibling knowledge or edit another repository. Keep the same app ID for retrieval.
+If the backend rejects scope or omits scope metadata, report suite context unavailable;
+do not claim it was checked or substitute another app. Do not let generic suite
+advice silently override a specific approved app decision: surface real conflicts.
+
 1. Search the feature/module in business language using:
    `studio_git.py knowledge-search --project-id "<app ID>" --query "<topic>"`.
    It searches titles, summaries and optional topics, not exact title equality.

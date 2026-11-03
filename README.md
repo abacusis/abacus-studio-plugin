@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.35.0: shared product-suite context helps Claude and Codex understand how
+your applications work together, while keeping private app knowledge and repository
+permissions separate. Engineering and Design retrieve the suite overview once per task.
+
 New in 0.34.1: clearer AI team names in the dashboard and progress updates, from
 Engineering Lead and Product Planner to QA Engineer and Release Reviewer. Existing
 agent IDs, permissions and workflows remain unchanged.
@@ -96,7 +100,13 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.34.1
+### What's new in 0.35.0
+
+**Suite-aware project context.** Claude and Codex
+can read an explicitly shared product-suite overview alongside the selected app's
+knowledge. They can consider cross-product dependencies without receiving private
+sibling-app notes or permission to change another repository. Requires the matching
+Studio backend update.
 
 **Security Officer assessment.** Ask for an OWASP +
 STRIDE source assessment to understand threats, relevant security controls, findings
@@ -160,7 +170,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.34.1 is available from `main` for both tools. Existing Codex installs
+Version 0.35.0 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 

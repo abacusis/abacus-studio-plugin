@@ -12,7 +12,9 @@ to preserve sample-data isolation, scope and stop/continue boundaries. A preview
 does not require a new command or automatically authorize backend implementation.
 Use the project-local Impeccable skill at `.agents/skills/impeccable/SKILL.md`.
 For a configured Studio app, first use `abacus-project-knowledge` to retrieve
-relevant design/workflow agreements. Only current approved records establish requirements.
+the shared suite overview once per task and relevant design/workflow agreements.
+Only current approved records establish requirements. Reuse unchanged context
+within the task; suite awareness does not authorize changing another app.
 Read its complete instructions before taking design actions and follow the
 references it selects. Resolve its skill directory to that project-local folder,
 not this wrapper's directory, when invoking its launcher or reading references.

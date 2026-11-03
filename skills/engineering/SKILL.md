@@ -11,6 +11,9 @@ Use this skill automatically when the development task fits, or explicitly throu
 
 FIRST read [Workflow depth](../../references/engineering/workflow-depth.md).
 Before authorized implementation edits, apply [Task freshness](../../references/engineering/task-freshness.md).
+For a Studio-linked app, use `abacus-studio:project-knowledge` once at task start
+to retrieve the shared suite overview, then relevant app decisions. This is a
+read-only context lookup, including for planning; not a reason to launch a team.
 Honor natural-language quick/deep preferences while classifying actual risk.
 When the user requests a mockup/prototype, or substantial visual uncertainty makes
 a preview useful, use [Mockup-first](../../references/engineering/mockup-first.md).

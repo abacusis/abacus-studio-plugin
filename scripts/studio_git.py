@@ -574,6 +574,7 @@ def main():
     parser.add_argument('--project-id')
     parser.add_argument('--query')
     parser.add_argument('--knowledge-id')
+    parser.add_argument('--knowledge-scope', choices=['all', 'app', 'suite'])
     parser.add_argument('--offset', type=int, default=0)
     parser.add_argument('--workspace')
     parser.add_argument('--url')
@@ -624,7 +625,10 @@ def main():
         elif args.action == 'knowledge-search':
             if (args.query and len(args.query) > 300) or not 0 <= args.offset <= 10000:
                 raise ValueError('Use a query up to 300 characters and offset from 0 to 10000.')
-            result = mcp_call('search_app_knowledge', {'project_id': args.project_id, 'query': args.query or '', 'offset': args.offset})
+            body = {'project_id': args.project_id, 'query': args.query or '', 'offset': args.offset}
+            if args.knowledge_scope:
+                body['scope'] = args.knowledge_scope
+            result = mcp_call('search_app_knowledge', body)
         elif args.action == 'knowledge-get':
             if not args.knowledge_id or not re.fullmatch(r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}', args.knowledge_id):
                 raise ValueError('A knowledge record ID returned by Studio is required.')

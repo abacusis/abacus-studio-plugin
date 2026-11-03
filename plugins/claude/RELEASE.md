@@ -1,5 +1,20 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.35.0 — shared product-suite context
+
+- Engineering and Design retrieve the selected app's explicitly shared suite
+  overview once per task, followed by relevant app decisions. Context is passed
+  to specialists rather than reloaded for every handoff or message.
+- Knowledge search supports optional --knowledge-scope all/app/suite, using the
+  same selected app and Studio authorization. No sibling repository access,
+  private app notes or additional execution permissions are implied.
+- Studio's matching backend is deployed. The approved Allocait overview is saved
+  once and resolves from PWA, GUS and Logistics. Backend membership, visibility,
+  project/account isolation and approval-state rules remain enforced.
+- Source review, MCP regressions, disposable SQL isolation checks and existing
+  plugin-connection retrieval passed. Full fresh client-session routing acceptance
+  remains pending; missing backend scope support is reported, never invented.
+
 ## 0.34.1 — clearer client-facing team names
 
 - Dashboard and client progress guidance use Engineering Lead, Product Planner,

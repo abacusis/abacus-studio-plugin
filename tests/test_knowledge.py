@@ -28,6 +28,11 @@ class KnowledgeTests(unittest.TestCase):
         self.assertEqual(code,0)
         request.assert_called_once_with('get_app_knowledge',{'project_id':APP,'knowledge_id':RECORD})
 
+    def test_suite_discovery_stays_bound_to_selected_app(self):
+        code,request,_=self.call(['knowledge-search','--project-id',APP,'--knowledge-scope','suite'])
+        self.assertEqual(code,0)
+        request.assert_called_once_with('search_app_knowledge',{'project_id':APP,'query':'','offset':0,'scope':'suite'})
+
     def test_invalid_inputs_do_not_call_studio(self):
         for args in [ ['knowledge-search','--project-id',APP,'--offset','-1'], ['knowledge-search','--project-id',APP,'--query','x'*301], ['knowledge-get','--project-id',APP,'--knowledge-id','bad'] ]:
             with patch.object(sys,'stderr',StringIO()):

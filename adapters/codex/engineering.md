@@ -13,6 +13,9 @@ assume a Claude environment variable exists.
 
 Read [Workflow depth](../../references/engineering/workflow-depth.md) first.
 Before authorized implementation edits, apply [Task freshness](../../references/engineering/task-freshness.md).
+For a Studio-linked app, use `abacus-project-knowledge` once at task start to
+retrieve the shared suite overview, then relevant app decisions. This is a
+read-only context lookup, including for planning; not a reason to launch a team.
 Infer quick/deep intent and consequences. Ordinary copy, spacing and confirmation
 messages stay in the main conversation with focused checks. No automatic team,
 spec document, map or dashboard just for a small change.
