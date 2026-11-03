@@ -18,6 +18,24 @@ spec.loader.exec_module(dash)
 
 
 class DashboardTests(unittest.TestCase):
+    def test_display_names_match_client_guidance_and_frontend_without_new_ids(self):
+        expected = {'orchestrator': 'Engineering Lead', 'spec-writer': 'Product Planner',
+                    'builder': 'Software Engineer', 'verifier': 'QA Engineer',
+                    'code-reviewer': 'Code Reviewer', 'security-reviewer': 'Security Engineer',
+                    'ui-reviewer': 'Visual Designer', 'ux-reviewer': 'UX Reviewer',
+                    'readiness-reviewer': 'Release Reviewer'}
+        self.assertEqual(dash.ROLES, expected)
+        import re
+        script = (ROOT/'dashboard/app.js').read_text()
+        names = re.search(r'const names=\{([^}]+)\}', script).group(1)
+        rendered = {
+            quoted or bare: label for quoted, bare, label in
+            re.findall(r"(?:'([^']+)'|([a-z]+)):'([^']+)'", names)}
+        self.assertEqual(rendered, expected)
+        guidance = (ROOT/'references/client-communication.md').read_text()
+        for role, label in expected.items():
+            self.assertIn(f'| {role} | {label} |', guidance)
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
         self.root=Path(self.temp.name).resolve()

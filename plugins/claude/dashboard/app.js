@@ -13,7 +13,7 @@ const icons = {
   git:'<circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="4" r="2"/><path d="M6 6v12m12-12v4c0 4-12 0-12 6"/>'
 };
 function icon(name){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[name]+'</svg>';}
-const names={orchestrator:'Orchestrator','spec-writer':'Spec Writer',builder:'Builder',verifier:'Verification','code-reviewer':'Code Review','security-reviewer':'Security Review','ui-reviewer':'UI Review','ux-reviewer':'UX Review','readiness-reviewer':'Readiness'};
+const names={orchestrator:'Engineering Lead','spec-writer':'Product Planner',builder:'Software Engineer',verifier:'QA Engineer','code-reviewer':'Code Reviewer','security-reviewer':'Security Engineer','ui-reviewer':'Visual Designer','ux-reviewer':'UX Reviewer','readiness-reviewer':'Release Reviewer'};
 const labels={working:'Working now',idle:'Waiting',returned:'Finished task',stale:'No recent signal',ended:'Session ended',interrupted:'Interrupted',attention:'Needs attention',queued:'Up next',not_required:'Not needed'};
 const resultLabels={passed:'Passed',failed:'Failed',not_verified:'Not verified',blocked:'Blocked',note:'Note'};
 let data=null, selected='orchestrator', tab='activity', online=false, pending=false, requestError='';
@@ -80,7 +80,7 @@ function renderHandoffs(){
   if(first){mapSession=session;seenHandoffs.clear();cancelPulses();}
   const events=data.events.filter(e=>e.kind==='SubagentStart'||e.kind==='SubagentStop');
   const latest=events[0];
-  $('handoff-status').textContent=latest?'Last handoff: '+(latest.kind==='SubagentStart'?'Orchestrator → '+names[latest.role]:names[latest.role]+' → Orchestrator')+' · '+(latest.kind==='SubagentStart'?'Task started':'Task returned; checks stay separate'):'Connections appear when agents are invoked.';
+  $('handoff-status').textContent=latest?'Last handoff: '+(latest.kind==='SubagentStart'?names.orchestrator+' → '+names[latest.role]:names[latest.role]+' → '+names.orchestrator)+' · '+(latest.kind==='SubagentStart'?'Task started':'Task returned; checks stay separate'):'Connections appear when agents are invoked.';
   const now=Date.now()/1000;
   events.slice().reverse().forEach(event=>{
     const key=[session,event.role,event.kind,event.time].join(':');

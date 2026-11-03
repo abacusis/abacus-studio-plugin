@@ -1,5 +1,13 @@
 # Publishing Abacus Studio for Claude Code
 
+## 0.34.1 — clearer client-facing team names
+
+- Dashboard and client progress guidance use Engineering Lead, Product Planner,
+  Software Engineer, QA Engineer, Code Reviewer, Security Engineer, Visual Designer,
+  UX Reviewer and Release Reviewer. Existing role IDs and permissions stay intact.
+- Dashboard handoffs, accessible labels and README share these names; parity tests
+  protect backend/frontend mapping. Release review never authorizes publishing.
+
 ## 0.34.0 — Security Officer source assessment
 
 - Existing Security Reviewer supports explicitly requested OWASP ASVS 5.0.0 and

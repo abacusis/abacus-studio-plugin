@@ -14,6 +14,10 @@ and work with Abacus to bring reviewed changes into your live application.
 [Get started](https://studio.abacusis.ca/install/claude) ·
 [Explore Abacus Studio](https://studio.abacusis.ca)
 
+New in 0.34.1: clearer AI team names in the dashboard and progress updates, from
+Engineering Lead and Product Planner to QA Engineer and Release Reviewer. Existing
+agent IDs, permissions and workflows remain unchanged.
+
 New in 0.34.0: request a Security Officer OWASP + STRIDE source assessment for a
 threat model, relevant security controls, findings and a clear validation backlog.
 This deeper review is optional; everyday changes retain focused security checks.
@@ -62,14 +66,20 @@ need to manage a team of agents or remember a command for each one.
 
 | Specialist | What it brings to your change |
 | --- | --- |
-| Spec Writer | Turns your request into clear requirements and acceptance criteria. |
-| Builder | Implements the agreed change and adds relevant tests. |
-| Verification Specialist | Checks requirements against actual results and identifies what remains untested. |
+| Engineering Lead (Orchestrator) | Chooses the approach and coordinates the relevant specialists. |
+| Product Planner (Spec Writer) | Turns your request into clear requirements and acceptance criteria. |
+| Software Engineer (Builder) | Implements the agreed change and adds relevant tests. |
+| QA Engineer (Verification Specialist / Verifier) | Checks requirements against actual results and identifies what remains untested. |
 | Code Reviewer | Looks for bugs, regressions, and code that will be difficult to maintain. |
-| Security Reviewer | Examines relevant access and data boundaries through focused source review. |
-| UI Reviewer | Inspects real screenshots for clipping, layout issues, and visual inconsistency. |
+| Security Engineer (Security Reviewer) | Examines relevant access and data boundaries through focused source review. |
+| Visual Designer (UI Reviewer) | Inspects real screenshots for clipping, layout issues, and visual inconsistency. |
 | UX Reviewer | Examines actual interaction evidence for confusing steps, missing feedback, and recovery problems. |
-| Readiness Reviewer | Brings requirements, checks and reviews together to identify what is ready and what still needs attention. |
+| Release Reviewer (Readiness Reviewer) | Brings requirements, checks and reviews together to identify what is ready and what still needs attention. |
+
+**Clearer team names.** The dashboard and progress
+messages use the titles above. Technical agent IDs stay compatible with existing
+installations. The Release Reviewer assesses readiness; Submit and Request publish
+remain separate workflows, and the Abacus team still reviews publication.
 
 For example, a form might look right but silently lose your work after a failed
 save. Visual review checks the screen; UX review examines the recorded flow and
@@ -86,11 +96,11 @@ your local Claude session and depend on available tools, approved access, and
 actual evidence. No screenshot means no visual pass; no executed check means no
 claim that it passed. Readiness to preview is never approval to publish.
 
-### What's new in 0.34.0
+### What's new in 0.34.1
 
 **Security Officer assessment.** Ask for an OWASP +
 STRIDE source assessment to understand threats, relevant security controls, findings
-and remaining validation. The existing Security Reviewer handles this deeper mode
+and remaining validation. The Security Engineer handles this deeper mode
 on request; everyday changes keep their focused review. It is not penetration
 testing, compliance certification or automatic approval to publish.
 
@@ -150,7 +160,7 @@ A freshness check keeps both distributions synchronized with the playbooks and
 helpers. The same adapter pattern can support more tools after compatibility work;
 no other tool integration is included yet.
 
-Version 0.34.0 is available from `main` for both tools. Existing Codex installs
+Version 0.34.1 is available from `main` for both tools. Existing Codex installs
 pinned to the old `codex` branch need a one-time marketplace re-registration;
 see the [Codex installation instructions](adapters/codex/INSTALL.md).
 
@@ -180,7 +190,7 @@ intent and the actual risk to choose an appropriate workflow. Simple messages an
 copy edits stay with the main conversation and focused checks, rather than a full
 agent team. Sensitive work still gets the checks it needs. No new commands.
 
-**Watch Claude coordinate the team.** A live map connects the Orchestrator to
+**Watch Claude coordinate the team.** A live map connects the Engineering Lead to
 invoked specialists. One-shot handoff signals show tasks starting and returning,
 while parallel work stays visible together. Reduced motion keeps the same state
 without moving signals. These connections represent recorded session activity,
@@ -197,7 +207,7 @@ Publish requests open a development-to-release review PR without requiring paid
 GitHub branch protection. Review, merging and deployment remain separate steps.
 
 **See your AI team working locally.** Ask Claude to open the team dashboard to see
-the Orchestrator and eight specialists, select an agent's activity and findings,
+the Engineering Lead and eight specialists, select an agent's activity and findings,
 and see changes still on your computer. Submit and Request publish buttons queue
 the existing Claude workflows; they never bypass review or publish directly.
 Tracking is optional and local. Returned agents are not automatically marked as
@@ -206,7 +216,7 @@ passed, and stale activity is clearly labeled.
 Ask Claude to
 “Open the local team dashboard” and approve workspace tracking to get started.
 
-The **Readiness Reviewer** adds a final evidence check before Claude calls a
+The **Release Reviewer** adds a final evidence check before Claude calls a
 substantial change ready to preview. It brings together the agreed requirements,
 actual test results, and relevant specialist findings—so a missing test or an
 unresolved problem does not get lost behind a reassuring “done.”
@@ -231,10 +241,10 @@ conversation; they don't permanently prevent changes.
 **Engineering guidance built in.** Abacus Engineering provides playbooks for
 clarifying requirements, planning features, testing, debugging, and reviewing
 code. Larger changes get a structured approach; small improvements stay simple.
-For substantial features, a read-only Spec Writer agent can help clarify the
+For substantial features, a read-only Product Planner can help clarify the
 requirements before implementation, while Claude coordinates the work.
-An implementation Builder agent can then work from those requirements, with
-a Verification Specialist checking the result against agreed requirements.
+A Software Engineer can then work from those requirements, with
+a QA Engineer checking the result against agreed requirements.
 It reports what passed, what failed, and what still needs checking. A read-only
 Code Reviewer examines the engineering quality and potential regressions.
 Abacus technical review and publishing approval remain separate.
@@ -243,9 +253,9 @@ Abacus technical review and publishing approval remain separate.
 Studio-managed Impeccable design package. Focused source reviews help identify
 potential security issues and explain what still needs verification. They are
 not a substitute for a complete security audit.
-For sensitive changes, a read-only Security Reviewer traces relevant access and
+For sensitive changes, a read-only Security Engineer traces relevant access and
 data boundaries and reports concerns without probing your live application.
-A UI Reviewer inspects actual desktop/mobile screenshots for layout problems
+A Visual Designer inspects actual desktop/mobile screenshots for layout problems
 and visual consistency, keeping visual review separate from workflow testing.
 A separate UX Reviewer examines actual flow evidence for confusing actions,
 missing feedback, and recovery problems, without mistaking screenshots for a

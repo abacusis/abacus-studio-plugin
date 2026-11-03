@@ -20,9 +20,9 @@ from urllib.parse import urlsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from plugin_runtime import is_codex
 
-ROLES = {'orchestrator': 'Orchestrator', 'spec-writer': 'Spec Writer', 'builder': 'Builder',
-         'verifier': 'Verification', 'code-reviewer': 'Code Review', 'security-reviewer': 'Security Review',
-         'ui-reviewer': 'UI Review', 'ux-reviewer': 'UX Review', 'readiness-reviewer': 'Readiness'}
+ROLES = {'orchestrator': 'Engineering Lead', 'spec-writer': 'Product Planner', 'builder': 'Software Engineer',
+         'verifier': 'QA Engineer', 'code-reviewer': 'Code Reviewer', 'security-reviewer': 'Security Engineer',
+         'ui-reviewer': 'Visual Designer', 'ux-reviewer': 'UX Reviewer', 'readiness-reviewer': 'Release Reviewer'}
 ACTIONS = ({'submit': '$abacus-submit', 'request-publish': '$abacus-request-publish'} if is_codex() else
            {'submit': '/abacus-studio:submit', 'request-publish': '/abacus-studio:request-publish'})
 STALE_AFTER = 300
